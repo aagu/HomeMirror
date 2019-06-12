@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:gravity="right"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MirrorActivity">
 
     <TextView
         android:id="@+id/birthday_text"
@@ -152,6 +152,25 @@
             tools:text="Time is up!"
             tools:visibility="visible" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/battery_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_battery_50_black"
+            android:layout_gravity="start|bottom"
+            android:padding="10dp"/>
+        <TextView
+            android:id="@+id/battery_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="52%"
+            android:textSize="18sp"/>
     </LinearLayout>
 
 </LinearLayout>

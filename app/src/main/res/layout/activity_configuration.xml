@@ -397,6 +397,20 @@
             android:layout_height="wrap_content"
             android:text="@string/stock_description" />
 
+        <CheckBox
+            android:id="@+id/battery_checkbox"
+            style="@style/ConfigurationItemText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:text="@string/battery_monitor" />
+
+        <TextView
+            style="@style/ConfigurationDescriptionText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/battery_desc" />
+
         <Button
             android:id="@+id/launch_button"
             android:layout_width="wrap_content"

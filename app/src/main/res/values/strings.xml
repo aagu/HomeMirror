@@ -57,5 +57,7 @@
     <string name="time_hour_short">h</string>
     <string name="time_min_short">m</string>
     <string name="time_sec_short">s</string>
+    <string name="battery_monitor">Monitor battery level</string>
+    <string name="battery_desc">show battery level in left corner when battery is less than 50%</string>
 
 </resources>

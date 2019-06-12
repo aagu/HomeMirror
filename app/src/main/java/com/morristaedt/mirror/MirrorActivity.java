@@ -1,7 +1,7 @@
 package com.morristaedt.mirror;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
 import android.os.Build;
@@ -18,13 +18,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.morristaedt.mirror.configuration.ConfigurationSettings;
+import com.morristaedt.mirror.modules.BatteryModule;
 import com.morristaedt.mirror.modules.BirthdayModule;
 import com.morristaedt.mirror.modules.CalendarModule;
 import com.morristaedt.mirror.modules.ChoresModule;
 import com.morristaedt.mirror.modules.CountdownModule;
 import com.morristaedt.mirror.modules.DayModule;
 import com.morristaedt.mirror.modules.ForecastModule;
-import com.morristaedt.mirror.modules.MoodModule;
 import com.morristaedt.mirror.modules.NewsModule;
 import com.morristaedt.mirror.modules.XKCDModule;
 import com.morristaedt.mirror.modules.YahooFinanceModule;
@@ -32,8 +32,6 @@ import com.morristaedt.mirror.receiver.AlarmReceiver;
 import com.morristaedt.mirror.requests.YahooStockResponse;
 import com.morristaedt.mirror.utils.WeekUtil;
 import com.squareup.picasso.Picasso;
-
-import java.lang.ref.WeakReference;
 
 public class MirrorActivity extends AppCompatActivity {
 
@@ -50,11 +48,16 @@ public class MirrorActivity extends AppCompatActivity {
     private View mWaterPlants;
     private View mGroceryList;
     private ImageView mXKCDImage;
-    private MoodModule mMoodModule;
+    //private MoodModule mMoodModule;
     private TextView mNewsHeadline;
     private TextView mCalendarTitleText;
     private TextView mCalendarDetailsText;
     private TextView mCountdownText;
+    private ImageView mBatteryIcon;
+    private TextView mBatteryLevelText;
+    private BatteryModule mBatteryModule;
+
+    private BatteryModule.BatteryLevelReceiver batteryLevelReceiver;
 
     private XKCDModule.XKCDListener mXKCDListener = new XKCDModule.XKCDListener() {
         @Override
@@ -113,19 +116,6 @@ public class MirrorActivity extends AppCompatActivity {
         }
     };
 
-    private MoodModule.MoodListener mMoodListener = new MoodModule.MoodListener() {
-        @Override
-        public void onShouldGivePositiveAffirmation(final String affirmation) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mMoodText.setVisibility(affirmation == null ? View.GONE : View.VISIBLE);
-                    mMoodText.setText(affirmation);
-                }
-            });
-        }
-    };
-
     private CalendarModule.CalendarListener mCalendarListener = new CalendarModule.CalendarListener() {
         @Override
         public void onCalendarUpdate(String title, String details) {
@@ -148,6 +138,33 @@ public class MirrorActivity extends AppCompatActivity {
                 public void run() {
                     mCountdownText.setVisibility(View.VISIBLE);
                     mCountdownText.setText(timeLeft);
+                }
+            });
+        }
+    };
+
+    private BatteryModule.BatteryListener mBatteryListener = new BatteryModule.BatteryListener() {
+        @Override
+        public void onBatteryLevelChange(final int level) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (level > 50) {
+                        mBatteryIcon.setVisibility(View.GONE);
+                        mBatteryLevelText.setVisibility(View.GONE);
+                    } else {
+                        mBatteryLevelText.setText(String.valueOf(level));
+                        if (level > 30) {
+                            mBatteryIcon.setImageDrawable(getResources().
+                                    getDrawable(R.drawable.ic_battery_50_black));
+                        } else if (level > 20) {
+                            mBatteryIcon.setImageDrawable(getResources().
+                                    getDrawable(R.drawable.ic_battery_30_black));
+                        } else {
+                            mBatteryIcon.setImageDrawable(getResources().
+                                    getDrawable(R.drawable.ic_battery_alert_black));
+                        }
+                    }
                 }
             });
         }
@@ -193,6 +210,8 @@ public class MirrorActivity extends AppCompatActivity {
         mCalendarTitleText = (TextView) findViewById(R.id.calendar_title);
         mCalendarDetailsText = (TextView) findViewById(R.id.calendar_details);
         mCountdownText = (TextView) findViewById(R.id.countdown_text);
+        mBatteryIcon = findViewById(R.id.battery_icon);
+        mBatteryLevelText = findViewById(R.id.battery_level);
 
         if (mConfigSettings.invertXKCD()) {
             //Negative of XKCD image
@@ -213,9 +232,9 @@ public class MirrorActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        if (mMoodModule != null) {
+        /*if (mMoodModule != null) {
             mMoodModule.release();
-        }
+        }*/
     }
 
     @Override
@@ -288,17 +307,24 @@ public class MirrorActivity extends AppCompatActivity {
             mStockText.setVisibility(View.GONE);
         }
 
-        if (mConfigSettings.showMoodDetection()) {
+        /*if (mConfigSettings.showMoodDetection()) {
             mMoodModule = new MoodModule(new WeakReference<Context>(this));
             mMoodModule.getCurrentMood(mMoodListener);
         } else {
             mMoodText.setVisibility(View.GONE);
-        }
+        }*/
 
         if (mConfigSettings.showCountdown()){
             CountdownModule.getTimeRemaining(mConfigSettings.getCountdownEnd(), mCountdownListener);
         } else {
             mCountdownText.setVisibility(View.GONE);
+        }
+
+        if (mConfigSettings.showBatteryMonitor()) {
+            mBatteryModule = new BatteryModule(this, mBatteryListener);
+        } else {
+            mBatteryIcon.setVisibility(View.GONE);
+            mBatteryLevelText.setVisibility(View.GONE);
         }
     }
 
@@ -308,5 +334,11 @@ public class MirrorActivity extends AppCompatActivity {
         AlarmReceiver.stopMirrorUpdates(this);
         Intent intent = new Intent(this, SetUpActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(mBatteryModule.getReceiver());
+        super.onDestroy();
     }
 }

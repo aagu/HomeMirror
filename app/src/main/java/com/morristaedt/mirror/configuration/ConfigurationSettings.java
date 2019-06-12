@@ -36,6 +36,7 @@ public class ConfigurationSettings {
     private static final String STOCK_TICKER = "stock_ticker";
     private static final String SHOW_COUNTDOWN = "show_countdown";
     private static final String COUNTDOWN_END = "countdown_end";
+    private static final String SHOW_BATTERY = "show_battery";
 
     @NonNull
     private SharedPreferences mSharedPrefs;
@@ -49,6 +50,7 @@ public class ConfigurationSettings {
     private boolean mShowXKCD;
     private boolean mInvertXKCD;
     private boolean mShowCountdown;
+    private boolean mShowBatteryMonitor;
 
     private long mCountdownEnd;
 
@@ -80,6 +82,8 @@ public class ConfigurationSettings {
         mLongitude = mSharedPrefs.getString(LON, "");
 
         mStockTickerSymbol = mSharedPrefs.getString(STOCK_TICKER, "");
+
+        mShowBatteryMonitor = mSharedPrefs.getBoolean(SHOW_BATTERY, false);
     }
 
     public void setIsCelsius(boolean isCelsius) {
@@ -174,6 +178,17 @@ public class ConfigurationSettings {
         mCountdownEnd += (((days*24l+hours)*60l+mins)*60l+secs)*1000l;
         SharedPreferences.Editor editor = mSharedPrefs.edit();
         editor.putLong(COUNTDOWN_END, mCountdownEnd);
+        editor.apply();
+    }
+
+    public boolean showBatteryMonitor() {
+        return mShowBatteryMonitor;
+    }
+
+    public void setShowBatteryMonitor(boolean showBatteryMonitor) {
+        mShowBatteryMonitor = showBatteryMonitor;
+        SharedPreferences.Editor editor = mSharedPrefs.edit();
+        editor.putBoolean(SHOW_BATTERY, showBatteryMonitor);
         editor.apply();
     }
 

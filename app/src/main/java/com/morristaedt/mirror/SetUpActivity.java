@@ -2,11 +2,12 @@ package com.morristaedt.mirror;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,13 +15,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -28,14 +29,12 @@ import android.widget.Toast;
 
 import com.morristaedt.mirror.configuration.ConfigurationSettings;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SetUpActivity extends Activity {
 
-    private static final long HOUR_MILLIS = 60 * 60 * 1000;
-    private static final int METERS_MIN = 500;
+    private static final long HOUR_MILLIS = 1000;
+    private static final int METERS_MIN = 5;
 
     @NonNull
     private ConfigurationSettings mConfigSettings;
@@ -57,6 +56,7 @@ public class SetUpActivity extends Activity {
     private CheckBox mXKCDInvertCheckbox;
     private CheckBox mCountdownCheckbox;
     private CheckBox mNewCountdownCheckbox;
+    private CheckBox mBatteryMonitorCheckbox;
     private View mNewCountdownView;
     private View mLocationView;
     private View mColorShowView;
@@ -227,6 +227,8 @@ public class SetUpActivity extends Activity {
             }
         });
 
+        mBatteryMonitorCheckbox = findViewById(R.id.battery_checkbox);
+        mBatteryMonitorCheckbox.setChecked(mConfigSettings.showBatteryMonitor());
 
         findViewById(R.id.launch_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -320,6 +322,7 @@ public class SetUpActivity extends Activity {
         mConfigSettings.setShowNewsHeadline(mShowNewsHeadlineCheckbox.isChecked());
         mConfigSettings.setXKCDPreference(mXKCDCheckbox.isChecked(), mXKCDInvertCheckbox.isChecked());
         mConfigSettings.setShowCountdown(mCountdownCheckbox.isChecked());
+        mConfigSettings.setShowBatteryMonitor(mBatteryMonitorCheckbox.isChecked());
         if (mNewCountdownCheckbox.isChecked()){
             mConfigSettings.setCountdownTime(
                     Integer.parseInt("0"+mCountdownDays.getText().toString()),
@@ -337,6 +340,7 @@ public class SetUpActivity extends Activity {
         }
 
         mConfigSettings.setStockTickerSymbol(mStockTickerSymbol.getText().toString());
+        mConfigSettings.setShowBatteryMonitor(mBatteryMonitorCheckbox.isChecked());
     }
 
 
