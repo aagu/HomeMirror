@@ -10,8 +10,7 @@ import com.morristaedt.mirror.requests.YahooStockResponse;
 
 import java.math.BigDecimal;
 
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
+import retrofit2.Retrofit;
 
 /**
  * Created by HannahMitt on 8/22/15.
@@ -33,8 +32,8 @@ public class YahooFinanceModule {
 
             @Override
             protected YahooStockResponse doInBackground(Void... params) {
-                RestAdapter restAdapter = new RestAdapter.Builder()
-                        .setEndpoint("http://query.yahooapis.com/v1/public")
+                Retrofit restAdapter = new Retrofit.Builder()
+                        .baseUrl("http://query.yahooapis.com/v1/public")
                         .build();
 
                 YahooFinanceRequest service = restAdapter.create(YahooFinanceRequest.class);
@@ -42,12 +41,7 @@ public class YahooFinanceModule {
                 String query = "select * from yahoo.finance.quotes where symbol in (\"" + stockName + "\")";
                 String env = "http://datatables.org/alltables.env";
                 String format = "json";
-                try {
-                    return service.getStockData(query, env, format);
-                } catch (RetrofitError error) {
-                    Log.w("YahooFinanceModule", "YahooFinance error: " + error.getMessage());
-                    return null;
-                }
+                return service.getStockData(query, env, format);
             }
 
             @Override

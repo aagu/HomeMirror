@@ -1,7 +1,7 @@
 package com.morristaedt.mirror.requests;
 
-import retrofit.http.GET;
-import retrofit.http.Query;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 /**
  * Created by HannahMitt on 8/23/15.

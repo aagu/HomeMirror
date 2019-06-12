@@ -1,8 +1,10 @@
 package com.morristaedt.mirror;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
@@ -11,6 +13,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -23,6 +27,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.morristaedt.mirror.configuration.ConfigurationSettings;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SetUpActivity extends Activity {
 
@@ -65,7 +73,7 @@ public class SetUpActivity extends Activity {
     private TextView mColorShowerRed;
     private TextView mColorShowerGreen;
     private TextView mColorShowerBlue;
-    
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,10 +131,12 @@ public class SetUpActivity extends Activity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
         mColorPickerBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -138,10 +148,12 @@ public class SetUpActivity extends Activity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {}
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
         });
 
         mBikingCheckbox = (CheckBox) findViewById(R.id.biking_checkbox);
@@ -191,10 +203,10 @@ public class SetUpActivity extends Activity {
         mCountdownMins = (EditText) findViewById(R.id.countdown_mins);
         mCountdownSecs = (EditText) findViewById(R.id.countdown_secs);
 
-        mCountdownCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+        mCountdownCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
                     mNewCountdownCheckbox.setVisibility(View.VISIBLE);
                 } else {
                     mNewCountdownCheckbox.setChecked(false);
@@ -204,10 +216,10 @@ public class SetUpActivity extends Activity {
             }
         });
 
-        mNewCountdownCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+        mNewCountdownCheckbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked){
+                if (isChecked) {
                     mNewCountdownView.setVisibility(View.VISIBLE);
                 } else {
                     mNewCountdownView.setVisibility(View.GONE);
@@ -240,12 +252,25 @@ public class SetUpActivity extends Activity {
 
     private void setUpLocationMonitoring() {
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-        String provider = mLocationManager.getBestProvider(criteria, true);
+        List<String> providerList = mLocationManager.getProviders(true);
+        String provider;
+        if (providerList.contains(LocationManager.GPS_PROVIDER)) {
+            provider = LocationManager.GPS_PROVIDER;
+        } else if (providerList.contains(LocationManager.NETWORK_PROVIDER)) {
+            provider = LocationManager.NETWORK_PROVIDER;
+        } else {
+            Toast.makeText(this, "No location provider to use",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         try {
-            mLocation = mLocationManager.getLastKnownLocation(provider);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        2);
+            }
+            mLocation = mLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             if (mLocation == null) {
                 mLocationView.setVisibility(View.VISIBLE);
@@ -313,4 +338,6 @@ public class SetUpActivity extends Activity {
 
         mConfigSettings.setStockTickerSymbol(mStockTickerSymbol.getText().toString());
     }
+
+
 }

@@ -12,8 +12,7 @@ import com.morristaedt.mirror.requests.XKCDResponse;
 
 import java.util.Calendar;
 
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
+import retrofit2.Retrofit;
 
 /**
  * Created by HannahMitt on 8/22/15.
@@ -34,17 +33,12 @@ public class XKCDModule {
 
             @Override
             protected XKCDResponse doInBackground(Void... params) {
-                RestAdapter restAdapter = new RestAdapter.Builder()
-                        .setEndpoint("http://xkcd.com")
+                Retrofit restAdapter = new Retrofit.Builder()
+                        .baseUrl("http://xkcd.com")
                         .build();
 
                 XKCDRequest service = restAdapter.create(XKCDRequest.class);
-                try {
-                    return service.getLatestXKCD();
-                } catch (RetrofitError e) {
-                    Log.w("XKCDModule", "Error loading xkcd", e);
-                    return null;
-                }
+                return service.getLatestXKCD();
             }
 
             @Override

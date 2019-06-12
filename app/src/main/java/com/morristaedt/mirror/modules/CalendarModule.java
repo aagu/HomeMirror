@@ -1,10 +1,14 @@
 package com.morristaedt.mirror.modules;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.provider.CalendarContract;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -57,6 +61,11 @@ public class CalendarModule {
                     Log.e("CalendarModule", e.toString());
                 }
 
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions((Activity) context,
+                            new String[]{Manifest.permission.READ_CALENDAR},
+                            1);
+                }
 
                 cursor = contentResolver.query(CalendarContract.Events.CONTENT_URI, colsToQuery,
                         "( dtstart >" + start + ") and (dtend  <" + endOfDay.getTimeInMillis() + ")",

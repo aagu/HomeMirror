@@ -65,7 +65,7 @@ public class ConfigurationSettings {
     }
 
     private void readPrefs() {
-        mForecastUnits = mSharedPrefs.getString(FORECAST_UNITS, ForecastRequest.UNITS_US);
+        mForecastUnits = mSharedPrefs.getString(FORECAST_UNITS, ForecastRequest.UNITS_M);
         mTextColor = mSharedPrefs.getInt(TEXT_COLOR, Color.WHITE);
         mShowBikingHint = mSharedPrefs.getBoolean(BIKING_HINT, false);
         mShowMoodDetection = mSharedPrefs.getBoolean(USE_MOOD_DETECTION, false);
@@ -84,7 +84,7 @@ public class ConfigurationSettings {
 
     public void setIsCelsius(boolean isCelsius) {
         SharedPreferences.Editor editor = mSharedPrefs.edit();
-        editor.putString(FORECAST_UNITS, isCelsius ? ForecastRequest.UNITS_SI : ForecastRequest.UNITS_US);
+        editor.putString(FORECAST_UNITS, isCelsius ? ForecastRequest.UNITS_M : ForecastRequest.UNITS_I);
         editor.apply();
     }
 
@@ -178,7 +178,7 @@ public class ConfigurationSettings {
     }
 
     public boolean getIsCelsius() {
-        return ForecastRequest.UNITS_SI.equals(mForecastUnits);
+        return ForecastRequest.UNITS_M.equals(mForecastUnits);
     }
 
     public String getForecastUnits() {

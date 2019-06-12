@@ -8,8 +8,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -34,7 +35,7 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.ref.WeakReference;
 
-public class MirrorActivity extends ActionBarActivity {
+public class MirrorActivity extends AppCompatActivity {
 
     @NonNull
     private ConfigurationSettings mConfigSettings;
@@ -61,7 +62,7 @@ public class MirrorActivity extends ActionBarActivity {
             if (TextUtils.isEmpty(url)) {
                 mXKCDImage.setVisibility(View.GONE);
             } else {
-                Picasso.with(MirrorActivity.this).load(url).into(mXKCDImage);
+                Picasso.get().load(url).into(mXKCDImage);
                 mXKCDImage.setVisibility(View.VISIBLE);
             }
         }
@@ -245,7 +246,7 @@ public class MirrorActivity extends ActionBarActivity {
             mBirthdayText.setText(getString(R.string.happy_birthday, birthday));
         }
 
-        mDayText.setText(DayModule.getDay());
+        mDayText.setText(DayModule.getDay(getApplicationContext()));
 //        mHelloText.setText(TimeModule.getTimeOfDayWelcome(getResources())); // not in current design
 
         mWaterPlants.setVisibility(ChoresModule.waterPlantsToday() ? View.VISIBLE : View.GONE);
@@ -253,7 +254,7 @@ public class MirrorActivity extends ActionBarActivity {
 
         // Get the API key for whichever weather service API key is available
         // These should be declared as a string in xml
-        int forecastApiKeyRes = getResources().getIdentifier("dark_sky_api_key", "string", getPackageName());
+        int forecastApiKeyRes = getResources().getIdentifier("heweather_api_key", "string", getPackageName());
         int openWeatherApiKeyRes = getResources().getIdentifier("open_weather_api_key", "string", getPackageName());
 
         if (forecastApiKeyRes != 0) {
